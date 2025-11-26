@@ -109,5 +109,130 @@
     
     <p>© 2025 Reifan Alif Aldiansyah </p>
   </footer>
+    <!-- Audio player and audio control widget -->
+    <audio id="bg-audio" src="LIL SALMONELA - RUSUK (LYRIC VIDEO).mp3" loop preload="none"></audio>
+
+    <div class="audio-controls" aria-hidden="false">
+      <button id="play-toggle" class="play-btn" aria-label="Play music" title="Play/Pause Music">►</button>
+
+      <div class="vol-group" title="Volume">
+        <button id="mute-toggle" class="vol-btn" aria-label="Mute/Unmute" title="Mute/Unmute">🔊</button>
+
+        <div class="vol-popup">
+          <input id="volume-slider" class="volume-slider" type="range" min="0" max="1" step="0.01" value="0.80" aria-label="Volume" />
+          <span id="vol-label" class="vol-label" aria-hidden="true">80%</span>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      (function () {
+        const audio = document.getElementById('bg-audio');
+        const btn = document.getElementById('play-toggle');
+        const muteBtn = document.getElementById('mute-toggle');
+        const volSlider = document.getElementById('volume-slider');
+        const volLabel = document.getElementById('vol-label');
+
+        // Initialize volume
+        const defaultVol = parseFloat(volSlider.value) || 0.8;
+        if (audio) audio.volume = defaultVol;
+        volLabel.textContent = Math.round(defaultVol * 100) + '%';
+
+        function setPlayingState(isPlaying) {
+          if (isPlaying) {
+            btn.classList.add('playing');
+            btn.textContent = '❚❚';
+            btn.setAttribute('aria-label', 'Pause music');
+            btn.setAttribute('aria-pressed', 'true');
+          } else {
+            btn.classList.remove('playing');
+            btn.textContent = '►';
+            btn.setAttribute('aria-label', 'Play music');
+            btn.setAttribute('aria-pressed', 'false');
+          }
+        }
+
+        btn.addEventListener('click', function () {
+          if (!audio) return;
+          if (audio.paused) {
+            audio.play().then(() => setPlayingState(true)).catch(() => {
+              alert('Tidak dapat memutar musik otomatis. Pastikan file ada di "audio/music.mp3" dan klik lagi.');
+            });
+          } else {
+            audio.pause();
+            setPlayingState(false);
+          }
+        });
+
+        function updateVolume(newVol) {
+          const v = Math.max(0, Math.min(1, Number(newVol)));
+          if (audio) {
+            audio.volume = v;
+            if (audio.muted && v > 0) audio.muted = false;
+          }
+          volSlider.value = v.toFixed(2);
+          volLabel.textContent = Math.round(v * 100) + '%';
+          updateMuteIcon();
+        }
+
+        function updateMuteIcon() {
+          if (!audio) return;
+          if (audio.muted || audio.volume === 0) {
+            muteBtn.textContent = '🔈';
+            muteBtn.setAttribute('aria-label', 'Unmute');
+          } else if (audio.volume < 0.5) {
+            muteBtn.textContent = '🔉';
+            muteBtn.setAttribute('aria-label', 'Mute');
+          } else {
+            muteBtn.textContent = '🔊';
+            muteBtn.setAttribute('aria-label', 'Mute');
+          }
+        }
+
+        volSlider.addEventListener('input', (e) => updateVolume(e.target.value));
+
+        muteBtn.addEventListener('click', function () {
+          if (!audio) return;
+          audio.muted = !audio.muted;
+          if (!audio.muted && audio.volume === 0) updateVolume(0.5);
+          updateMuteIcon();
+        });
+
+        // Close popup on outside click (desktop nicety)
+        document.addEventListener('click', (e) => {
+          const group = document.querySelector('.vol-group');
+          if (!group) return;
+          if (!group.contains(e.target)) group.classList.remove('open');
+        });
+
+        // Show/hide popup via hover and focus (CSS handles desktop hover)
+        const volGroup = document.querySelector('.vol-group');
+        if (volGroup) {
+          volGroup.addEventListener('mouseenter', () => volGroup.classList.add('open'));
+          volGroup.addEventListener('mouseleave', () => volGroup.classList.remove('open'));
+          volGroup.addEventListener('focusin', () => volGroup.classList.add('open'));
+          volGroup.addEventListener('focusout', () => volGroup.classList.remove('open'));
+        }
+
+        // keyboard shortcuts: space toggles play, +/- change volume
+        document.addEventListener('keydown', function (e) {
+          if (e.target.tagName === 'INPUT' || e.target.isContentEditable) return;
+          if (e.code === 'Space') {
+            e.preventDefault();
+            btn.click();
+          }
+          if (e.key === '+' || e.key === '=') {
+            updateVolume(Math.min(1, Number(volSlider.value) + 0.05));
+          }
+          if (e.key === '-' || e.key === '_') {
+            updateVolume(Math.max(0, Number(volSlider.value) - 0.05));
+          }
+        });
+
+        // Set initial state
+        updateMuteIcon();
+        if (audio && !audio.paused) setPlayingState(true);
+      })();
+    </script>
 </body>
 </html>

@@ -154,6 +154,27 @@ img {
   opacity: 0.9;
 }
 
+/* layout for about with photo on the left */
+.about-inner {
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.about-photo {
+  width: 200px;
+  min-width: 140px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+  border: 3px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+}
+
+.about-text {
+  flex: 1;
+}
+
 /* ========== CONTACT SECTION ========== */
 .contact-form {
   display: flex;
@@ -201,9 +222,170 @@ img {
     text-align: center;
   }
 
+  /* stack about section on small screens */
+  .about-inner {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-photo {
+    width: 180px;
+    height: 180px;
+  }
+
+  /* play/pause floating button on small screens adjust */
+  .play-btn {
+    width: 52px;
+    height: 52px;
+    font-size: 20px;
+  }
   .menu a {
     margin-left: 10px;
   }
+}
+
+/* ========== PLAY / PAUSE BUTTON ========== */
+.play-btn {
+  /* let the container (.audio-controls) position the group;
+     style the play button to visually match the volume button */
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.play-btn:focus {
+  outline: 3px solid rgba(106,0,255,0.15);
+}
+
+.play-btn.playing {
+  background: linear-gradient(135deg, #00b894, #00cec9);
+  box-shadow: 0 6px 18px rgba(0,200,150,0.12);
+}
+
+.play-btn:hover { transform: scale(1.03); }
+
+.audio-controls {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  background: rgba(10,10,10,0.45);
+  padding: 8px 10px;
+  border-radius: 40px;
+  backdrop-filter: blur(6px);
+  z-index: 2000;
+}
+
+.vol-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: rgba(255,255,255,0.06);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+}
+
+.vol-label {
+  color: #fff;
+  font-size: 13px;
+  margin-left: 6px;
+  min-width: 36px;
+  text-align: right;
+}
+
+.volume-slider {
+  width: 110px;
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  background: rgba(255,255,255,0.12);
+  border-radius: 6px;
+}
+
+.volume-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #6a00ff;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.5);
+}
+
+@media (max-width: 480px) {
+  .audio-controls { right: 12px; bottom: 12px; padding: 6px; }
+  .volume-slider { width: 80px; }
+  .vol-label { display: none; }
+}
+
+/* Volume group with popup (YouTube-like) */
+.vol-group {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  /* match the play button height so both are vertically aligned */
+  height: 56px;
+}
+
+.vol-popup {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 12px);
+  transform: translateX(-50%);
+  width: 36px;
+  height: 140px;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  background: rgba(5,5,5,0.75);
+  border-radius: 8px;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.6);
+}
+
+.vol-group.open .vol-popup,
+.vol-group:focus-within .vol-popup,
+.vol-group:hover .vol-popup {
+  display: flex;
+}
+
+/* make the slider vertical inside the popup */
+.vol-popup .volume-slider {
+  width: 120px; /* visual length before rotation */
+  height: 6px;
+  transform-origin: center;
+  transform: rotate(-90deg);
+}
+
+/* when popup is visible, hide the label inside popup layout */
+.vol-popup .vol-label {
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+
+/* On small screens keep original horizontal slider (popup disabled) */
+@media (max-width: 640px) {
+  .vol-popup { position: static; display: flex; width: auto; height: auto; transform: none; padding: 6px; }
+  .vol-popup .volume-slider { transform: none; width: 80px; }
+  /* make the mute/vol button smaller on mobile so it doesn't crowd */
+  .vol-btn { width: 44px; height: 44px; }
+  .vol-group { height: auto; }
 }
 
 .icon-social {
@@ -217,4 +399,15 @@ ul li {
   list-style: none;
   display: inline-block;
   margin-right: 1rem;
+}
+.link-highlight {
+  color: #ffffff;
+  font-weight: 600;
+  text-decoration: none;
+  transition: 0.3s ease;
+}
+
+.link-highlight:hover {
+  color: #ffffff;
+  text-shadow: 0 0 12px #ffffff;
 }
